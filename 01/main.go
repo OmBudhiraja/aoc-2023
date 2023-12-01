@@ -1,34 +1,15 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ombudhiraja/aoc-2023/utils"
 )
 
-func setup() (string, int) {
-	fileName := flag.String("f", "input.txt", "-f <filename>")
-	part := flag.Int("p", 1, "-p <partNr>")
-	flag.Parse()
-
-	return *fileName, *part
-}
-
-func checkError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 func main() {
-	filename, part := setup()
-
-	data, err := os.ReadFile(filename)
-	checkError(err)
-
-	lines := strings.Split(string(data), "\n")
+	lines, part := utils.Setup()
 
 	if part == 1 {
 		part1(lines)
