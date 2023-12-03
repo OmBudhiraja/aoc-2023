@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/ombudhiraja/aoc-2023/utils"
 )
@@ -45,8 +44,6 @@ func part2(lines []string) {}
 func getPartNumber(line string, lines []string, lineIndex, charIndex int) (int, int, error) {
 
 	partNumber := ""
-
-	line = strings.TrimSpace(line)
 
 	for i := charIndex; i < len(line); i++ {
 		_, err := strconv.Atoi(string(line[i]))
