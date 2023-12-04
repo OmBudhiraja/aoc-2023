@@ -10,13 +10,10 @@ import (
 )
 
 func main() {
-	lines, part := utils.Setup()
+	lines := utils.Setup()
 
-	if part == 1 {
-		part1(lines)
-	} else {
-		part2(lines)
-	}
+	part1(lines)
+	part2(lines)
 
 }
 

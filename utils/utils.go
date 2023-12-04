@@ -6,9 +6,8 @@ import (
 	"strings"
 )
 
-func Setup() ([]string, int) {
+func Setup() []string {
 	fileName := flag.String("f", "input.txt", "-f <filename>")
-	part := flag.Int("p", 1, "-p <partNr>")
 	flag.Parse()
 
 	data, err := os.ReadFile(*fileName)
@@ -18,7 +17,7 @@ func Setup() ([]string, int) {
 
 	return mapper(lines, func(line string) string {
 		return strings.TrimSpace(line)
-	}), *part
+	})
 
 }
 
