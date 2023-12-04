@@ -11,23 +11,23 @@ func Setup() []string {
 	flag.Parse()
 
 	data, err := os.ReadFile(*fileName)
-	checkError(err)
+	CheckError(err)
 
 	lines := strings.Split(string(data), "\n")
 
-	return mapper(lines, func(line string) string {
+	return Mapper(lines, func(line string) string {
 		return strings.TrimSpace(line)
 	})
 
 }
 
-func checkError(err error) {
+func CheckError(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
-func mapper[I interface{}, O interface{}](arr []I, fn func(I) O) []O {
+func Mapper[I interface{}, O interface{}](arr []I, fn func(I) O) []O {
 	result := make([]O, len(arr))
 
 	for i, v := range arr {
