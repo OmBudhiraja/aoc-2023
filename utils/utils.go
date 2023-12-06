@@ -36,3 +36,25 @@ func Mapper[I interface{}, O interface{}](arr []I, fn func(I) O) []O {
 
 	return result
 }
+
+func Filter[I interface{}](arr []I, fn func(I) bool) []I {
+	result := make([]I, 0)
+
+	for _, v := range arr {
+		if fn(v) {
+			result = append(result, v)
+		}
+	}
+
+	return result
+}
+
+func Reduce[I interface{}, O interface{}](arr []I, fn func(O, I) O, initial O) O {
+	result := initial
+
+	for _, v := range arr {
+		result = fn(result, v)
+	}
+
+	return result
+}
