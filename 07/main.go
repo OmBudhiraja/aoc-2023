@@ -19,75 +19,96 @@ const (
 	fiveOfAKind  = "fiveOfAKind"
 )
 
+type Hand struct {
+	typeStrength       int
+	cards              string
+	bid                int
+	individualStrength []int
+}
+
 func main() {
 
 	lines := utils.Setup()
 
-	individualCardsStrength := []string{"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"}
+	individualCardsStrengthPart1 := []string{"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"}
+	individualCardsStrengthPart2 := []string{"J", "2", "3", "4", "5", "6", "7", "8", "9", "T", "Q", "K", "A"}
 
 	handTypeStrength := map[string]int{
-		highCard:     100,
-		onePair:      200,
-		twoPair:      300,
-		threeOfAKind: 400,
-		fullHouse:    500,
-		fourOfAKind:  600,
-		fiveOfAKind:  700,
+		highCard:     1,
+		onePair:      2,
+		twoPair:      3,
+		threeOfAKind: 4,
+		fullHouse:    5,
+		fourOfAKind:  6,
+		fiveOfAKind:  7,
 	}
 
-	type Hand struct {
-		typeStrength       int
-		cards              string
-		bid                int
-		individualStrength []int
-	}
-
-	sortedList := []Hand{}
+	sortedListPart1 := []Hand{}
+	sortedListPart2 := []Hand{}
 
 	for _, line := range lines {
 		info := strings.Split(line, " ")
 		hand := info[0]
 		bid, _ := strconv.Atoi(info[1])
 
-		weight := make([]int, len(hand))
+		weightPart1 := make([]int, len(hand))
+		weightPart2 := make([]int, len(hand))
 
 		for i, card := range hand {
 			cardStr := string(card)
-			cardIndex := indexOf(cardStr, individualCardsStrength)
-			weight[i] = cardIndex * (len(hand) - i)
+
+			weightPart1[i] = indexOf(cardStr, individualCardsStrengthPart1)
+			weightPart2[i] = indexOf(cardStr, individualCardsStrengthPart2)
 		}
 
-		sortedList = append(sortedList, Hand{
+		sortedListPart1 = append(sortedListPart1, Hand{
 			typeStrength:       getHandStrength(hand, handTypeStrength),
 			cards:              hand,
 			bid:                bid,
-			individualStrength: weight,
+			individualStrength: weightPart1,
+		})
+
+		sortedListPart2 = append(sortedListPart2, Hand{
+			typeStrength:       getHandStrengthWithJokerRules(hand, handTypeStrength),
+			cards:              hand,
+			bid:                bid,
+			individualStrength: weightPart2,
 		})
 
 	}
 
-	sort.Slice(sortedList, func(i, j int) bool {
+	sortCards(sortedListPart1)
+	sortCards(sortedListPart2)
 
-		if sortedList[i].typeStrength == sortedList[j].typeStrength {
+	resultPart1 := utils.Reduce(sortedListPart1, func(acc int, hand Hand, idx int) int {
+		return acc + (hand.bid * (idx + 1))
+	}, 0)
 
-			for k := 0; k < len(sortedList[i].individualStrength); k++ {
-				if sortedList[i].individualStrength[k] == sortedList[j].individualStrength[k] {
+	resultPart2 := utils.Reduce(sortedListPart2, func(acc int, hand Hand, idx int) int {
+		return acc + (hand.bid * (idx + 1))
+	}, 0)
+
+	fmt.Println("Part 1 ->", resultPart1)
+	fmt.Println("Part 2 ->", resultPart2)
+}
+
+func sortCards(list []Hand) {
+	sort.Slice(list, func(i, j int) bool {
+
+		if list[i].typeStrength == list[j].typeStrength {
+
+			for k := 0; k < len(list[i].individualStrength); k++ {
+				if list[i].individualStrength[k] == list[j].individualStrength[k] {
 					continue
 				}
 
-				return sortedList[i].individualStrength[k] < sortedList[j].individualStrength[k]
+				return list[i].individualStrength[k] < list[j].individualStrength[k]
 			}
 
 		}
 
-		return sortedList[i].typeStrength < sortedList[j].typeStrength
+		return list[i].typeStrength < list[j].typeStrength
 	})
-
-	val := utils.Reduce(sortedList, func(acc int, hand Hand, idx int) int {
-		return acc + (hand.bid * (idx + 1))
-	}, 0)
-
-	fmt.Println(val)
 }
 
 func indexOf(element string, data []string) int {
@@ -96,7 +117,8 @@ func indexOf(element string, data []string) int {
 			return k
 		}
 	}
-	return -1 //not found.
+
+	panic("Element not found")
 }
 
 func getHandStrength(str string, strengthMap map[string]int) int {
@@ -140,5 +162,43 @@ func getHandStrength(str string, strengthMap map[string]int) int {
 	}
 
 	return strengthMap[highCard]
+
+}
+
+func getHandStrengthWithJokerRules(str string, strengthMap map[string]int) int {
+
+	set := map[string]int{}
+
+	for _, card := range str {
+		set[string(card)]++
+	}
+
+	if _, ok := set["J"]; !ok {
+		return getHandStrength(str, strengthMap)
+	}
+
+	if len(set) == 1 || len(set) == 2 {
+		return strengthMap[fiveOfAKind]
+	}
+
+	if len(set) == 3 {
+		if set["J"] == 1 {
+			for _, v := range set {
+				if v == 3 {
+					return strengthMap[fourOfAKind]
+				}
+			}
+			return strengthMap[fullHouse]
+		} else {
+			return strengthMap[fourOfAKind]
+		}
+
+	}
+
+	if len(set) == 4 {
+		return strengthMap[threeOfAKind]
+	}
+
+	return strengthMap[onePair]
 
 }
