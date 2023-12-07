@@ -49,11 +49,11 @@ func Filter[I interface{}](arr []I, fn func(I) bool) []I {
 	return result
 }
 
-func Reduce[I interface{}, O interface{}](arr []I, fn func(O, I) O, initial O) O {
+func Reduce[I interface{}, O interface{}](arr []I, fn func(O, I, int) O, initial O) O {
 	result := initial
 
-	for _, v := range arr {
-		result = fn(result, v)
+	for idx, v := range arr {
+		result = fn(result, v, idx)
 	}
 
 	return result
