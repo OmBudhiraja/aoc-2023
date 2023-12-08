@@ -11,9 +11,10 @@ func Setup() []string {
 	flag.Parse()
 
 	data, err := os.ReadFile(*fileName)
+	trimmedData := strings.TrimSpace(string(data))
 	CheckError(err)
 
-	lines := strings.Split(string(data), "\n")
+	lines := strings.Split(trimmedData, "\n")
 
 	return Mapper(lines, func(line string) string {
 		return strings.TrimSpace(line)
