@@ -11,7 +11,6 @@ func main() {
 	lines := utils.Setup()
 
 	part1Result := 0
-	part2Result := 0
 
 	nodes := map[string][]string{}
 
@@ -63,30 +62,49 @@ func main() {
 		}
 	}
 
-	fmt.Println(startingNodes)
+	stepCounts := make([]int, len(startingNodes))
 
-	fonundAllWithZ := true
-	for {
-		fonundAllWithZ = true
-		for i, node := range startingNodes {
-			next := nodes[node][pattern[currentIdx]]
+	for i, startingNode := range startingNodes {
+		currentNode = nodes[startingNode]
+		totalSteps := 0
+		currentIdx = 0
 
-			startingNodes[i] = next
+		for {
 
-			if !strings.HasSuffix(next, "Z") {
-				fonundAllWithZ = false
+			next := currentNode[pattern[currentIdx]]
+			currentIdx = (currentIdx + 1) % len(pattern)
+			totalSteps++
+
+			if strings.HasSuffix(next, "Z") {
+				break
+			} else {
+				currentNode = nodes[next]
 			}
 		}
 
-		currentIdx = (currentIdx + 1) % len(pattern)
-		part2Result++
-
-		if fonundAllWithZ {
-			break
-		}
+		stepCounts[i] = totalSteps
 	}
 
 	fmt.Println("Part 1 -> ", part1Result)
-	fmt.Println("Part 2 -> ", part2Result)
+	fmt.Println("Part 2 -> ", LCM(stepCounts...))
 
+}
+
+func LCM(nums ...int) int {
+
+	result := 1
+
+	for _, num := range nums {
+		result = (result * num) / GCD(result, num)
+	}
+
+	return result
+}
+
+func GCD(a, b int) int {
+	if b == 0 {
+		return a
+	}
+
+	return GCD(b, a%b)
 }
