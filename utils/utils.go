@@ -59,3 +59,13 @@ func Reduce[I interface{}, O interface{}](arr []I, fn func(O, I, int) O, initial
 
 	return result
 }
+
+func Every[I interface{}](arr []I, fn func(I) bool) bool {
+	for _, v := range arr {
+		if !fn(v) {
+			return false
+		}
+	}
+
+	return true
+}
