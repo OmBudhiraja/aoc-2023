@@ -12,6 +12,7 @@ func main() {
 	lines := utils.Setup()
 
 	part1Result := 0
+	part2Result := 0
 
 	for _, line := range lines {
 
@@ -46,9 +47,17 @@ func main() {
 			seqs[i-1] = append(seqs[i-1], val)
 		}
 
+		for i := len(seqs) - 1; i > 0; i-- {
+			val := seqs[i-1][0] - seqs[i][0]
+			seqs[i-1] = append([]int{val}, seqs[i-1]...)
+
+		}
+
 		part1Result += seqs[0][len(seqs[0])-1]
+		part2Result += seqs[0][0]
 
 	}
 
 	fmt.Println("Part 1:", part1Result)
+	fmt.Println("Part 2:", part2Result)
 }
